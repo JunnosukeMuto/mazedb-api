@@ -2,24 +2,27 @@ services:
   db:
     image: postgres:16.1-bookworm
     restart: always
-    environment:
-      - POSTGRES_PASSWORD=postgres
+    env_file:
+      - ./postgres.env
     expose:
       - 5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
       # csvインポート作業時にコメントアウトを外す
-      # - ./csv:/csv
+      # - ./db/csv:/csv
 
-  app:
+  api:
     build:
-      context: .
+      context: ./api
       dockerfile: Dockerfile
     restart: always
+    env_file:
+      - ./postgres.env
     ports:
       - 5000:5000
+    command: python manage.py
     volumes:
-      - ./api.py:/app/api.py
+      - ./api:/app
     depends_on:
       - db
     

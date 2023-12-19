@@ -1,0 +1,22 @@
+services:
+  db:
+    build:
+      context: ./db
+      dockerfile: product.Dockerfile
+    restart: always
+    env_file:
+      - ./postgres.env
+
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - ./postgres.env
+    ports:
+      - 5000:5000
+    command: gunicorn --bind 0.0.0.5000 wsgi.py
+    depends_on:
+      - db

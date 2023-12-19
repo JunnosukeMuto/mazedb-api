@@ -16,5 +16,3 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 COPY . .
 
 EXPOSE 5000
-
-CMD python manage.py

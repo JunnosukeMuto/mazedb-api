@@ -83,28 +83,12 @@ select * from maze_data;
 
 ## API のテスト
 
-存在しない固有名
-
-```
-curl -X POST -H "Content-Type: application/json" -d '{"name":"hogehoge"}' localhost:5000/search/uniquename
-```
-
-存在する固有名
-
 ```
 curl -X POST -H "Content-Type: application/json" -d '{"name":"_8rbP_"}' localhost:5000/search/uniquename
 ```
 
-400
-
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"hogehoge":"hogehoge"}' localhost:5000/search/uniquename
-```
-
-404
-
-```
-curl -X POST -H "Content-Type: application/json" -d '{"hogehoge":"hogehoge"}' localhost:5000/hogehoge
+curl -X POST -H "Content-Type: application/json" -d '{"boader_l": 12, "correct_path_len":[11, 13]}' localhost:5000/search/features
 ```
 
 ## requirements.txt の生成

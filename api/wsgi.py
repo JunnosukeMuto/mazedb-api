@@ -1,5 +1,6 @@
 from flask import Flask, request
 import psycopg
+import os
 
 app = Flask(__name__)
 feature_keys = ['_base64_name_','algorithm','turn_num','l_num','l_size','l_size_std','r_num','r_size','r_size_std','boader_l','neighbor_sum','correct_path_len','turn_pos_num','dead_end_num','t_num','cross_num','straight_len_std','straight_num','goal_depth','depth_std','depth_max','depth_mean','straight_len_log_slope','width','height','start_x','start_y','goal_x','goal_y']
@@ -13,9 +14,9 @@ def uniquename2features():
     except Exception:
         return {'message': 'name field is required'}, 400
     # 生成アルゴリズムだけ違う同じ迷路が登録されている場合、返すのはどれか一つだけにしたいので、LIMIT 1を付ける
-    maze = psycopg.connect('user=postgres password=postgres host=db port=5432 dbname=postgres').execute('SELECT * FROM maze_data WHERE _base64_name_ = (%s) LIMIT 1', [name]).fetchall()[0]
+    maze = psycopg.connect('user=postgres password='+os.environ['POSTGRES_PASSWORD']+' host=db port=5432 dbname=postgres').execute('SELECT * FROM maze_data WHERE _base64_name_ = (%s) LIMIT 1', [name]).fetchall()
     if maze:
-        with_feature_keys = dict(zip(feature_keys, maze))
+        with_feature_keys = dict(zip(feature_keys, maze[0]))
         # 生成アルゴリズムは省く
         del with_feature_keys['algorithm']
         return {'maze':with_feature_keys} | {'isExist': True}
@@ -44,7 +45,6 @@ def features2uniquename():
         return {'message': 'you must include feature field'}, 400
     
     mazes = psycopg.connect('user=postgres password=postgres host=db port=5432 dbname=postgres').execute('SELECT * FROM maze_data WHERE '+' AND '.join(where_text)).fetchall()
-    # mazes = psycopg.connect('user=postgres password=postgres host=db port=5432 dbname=postgres').execute('SELECT * FROM maze_data WHERE boader_l=12;').fetchall()
     if mazes:
         with_feature_keys = []
         for maze in mazes:
@@ -56,9 +56,9 @@ def features2uniquename():
 
 @app.errorhandler(404)
 def not_found(e):
-    return {'message': 'invalid url'}, 
+    return {'message': 'invalid url'}, 404
 
 
 @app.errorhandler(405)
-def not_found(e):
+def method_not_allowed(e):
     return {'message': 'invalid method'}, 405
