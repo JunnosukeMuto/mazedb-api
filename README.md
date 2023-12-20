@@ -2,25 +2,26 @@
 
 ## TODO
 
-- 生成アルゴリズムの違いによる迷路の重複をデータから削除する
-- 生成アルゴリズムを特徴量から削除する
-- SQL インジェクションが起こるので修正する
+- [x] 生成アルゴリズムの違いによる迷路の重複をデータから削除する
+- [] 生成アルゴリズムを配列にし、生成アルゴリズムだけ同じ迷路を一つにまとめる
+- [] SQL インジェクションが防げているかわからない（今のところ大丈夫）ので、ORM(SQLAlchemy)を導入したい
+- [] 誰かSQLインジェクションのテストお願いします
 
 ## 本番環境チートシート
-
+起動（Ctrl+Cで終了）
 ```
 docker compose -f ./docker-compose.product.yml up --build
 ```
-
+コンテナの削除
 ```
 docker compose -f ./docker-compose.product.yml down
 ```
-
+起動中のコンテナのターミナルに入る
 ```
 docker compose -f ./docker-compose.product.yml exec proxy sh
 ```
 
-## csv を postgresql にインポート
+## csv を postgresql にインポート（今はdocker-entrypoint-initdb.dで初期設定しているので必要ない）
 
 https://book.st-hakky.com/hakky/try-postgres-on-docker/
 
