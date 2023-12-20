@@ -2,11 +2,10 @@ services:
   db:
     build:
       context: ./db
-      dockerfile: product.Dockerfile
+      dockerfile: Dockerfile
     restart: always
     env_file:
       - ./postgres.env
-
 
   api:
     build:
@@ -15,8 +14,16 @@ services:
     restart: always
     env_file:
       - ./postgres.env
-    ports:
-      - 5000:5000
-    command: gunicorn --bind 0.0.0.5000 wsgi.py
+    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
     depends_on:
       - db
+
+  proxy:
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile.product
+    ports:
+      - 80:80
+    depends_on:
+      - db
+      - api

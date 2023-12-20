@@ -4,6 +4,21 @@
 
 - 生成アルゴリズムの違いによる迷路の重複をデータから削除する
 - 生成アルゴリズムを特徴量から削除する
+- SQL インジェクションが起こるので修正する
+
+## 本番環境チートシート
+
+```
+docker compose -f ./docker-compose.product.yml up --build
+```
+
+```
+docker compose -f ./docker-compose.product.yml down
+```
+
+```
+docker compose -f ./docker-compose.product.yml exec proxy sh
+```
 
 ## csv を postgresql にインポート
 
@@ -81,7 +96,7 @@ csv をインポート
 select * from maze_data;
 ```
 
-## API のテスト
+## API のテスト（開発環境）
 
 ```
 curl -X POST -H "Content-Type: application/json" -d '{"name":"_8rbP_"}' localhost:5000/search/uniquename
@@ -89,6 +104,16 @@ curl -X POST -H "Content-Type: application/json" -d '{"name":"_8rbP_"}' localhos
 
 ```
 curl -X POST -H "Content-Type: application/json" -d '{"boader_l": 12, "correct_path_len":[11, 13]}' localhost:5000/search/features
+```
+
+## API のテスト（本番環境）
+
+```
+curl -X POST -H "Content-Type: application/json" -d '{"name":"_8rbP_"}' localhost/search/uniquename
+```
+
+```
+curl -X POST -H "Content-Type: application/json" -d '{"boader_l": 12, "correct_path_len":[11, 13]}' localhost/search/features
 ```
 
 ## requirements.txt の生成

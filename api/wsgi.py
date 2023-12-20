@@ -9,10 +9,13 @@ feature_keys = ['_base64_name_','algorithm','turn_num','l_num','l_size','l_size_
 # {"name": "hogehoge"}というようなJSONがPOSTされると、hogehogeという固有名を持つ迷路をDBから探し、存在した場合は特徴量を返す
 @app.route('/search/uniquename', methods=['POST'])
 def uniquename2features():
+
+    # nameフィールドを持ったJSON以外がリクエストされた場合、400を返す
     try:
         name = request.get_json()['name']
     except Exception:
-        return {'message': 'name field is required'}, 400
+        return {'message': 'request must be a JSON with name field'}, 400
+    
     # 生成アルゴリズムだけ違う同じ迷路が登録されている場合、返すのはどれか一つだけにしたいので、LIMIT 1を付ける
     maze = psycopg.connect('user=postgres password='+os.environ['POSTGRES_PASSWORD']+' host=db port=5432 dbname=postgres').execute('SELECT * FROM maze_data WHERE _base64_name_ = (%s) LIMIT 1', [name]).fetchall()
     if maze:
@@ -27,9 +30,15 @@ def uniquename2features():
 # {"boader_l": 12, "correct_path_len": [11, 13]}というようなJSONがPOSTされると、boader_lが12で、correct_path_lenが11以上13以下の迷路をDBから探し、存在した場合はリストにしてそれぞれの固有名と特徴量を返す
 @app.route('/search/features', methods=['POST'])
 def features2uniquename():
+
+    # JSON以外がリクエストされた場合、400を返す
+    try:
+        req: dict[str, int|float|list[int|float]] = request.get_json()
+    except Exception:
+        return {'message': 'request must be a JSON'}, 400
+    
     # SQLのWHEREの引数を自動生成する
     where_text = []
-    req = request.get_json()
     for key in feature_keys:
         if key in req:
             # 固有名がJSONの中にあった場合、400を返す
@@ -44,12 +53,10 @@ def features2uniquename():
     if where_text == []:
         return {'message': 'you must include feature field'}, 400
     
-    mazes = psycopg.connect('user=postgres password=postgres host=db port=5432 dbname=postgres').execute('SELECT * FROM maze_data WHERE '+' AND '.join(where_text)).fetchall()
+    mazes = psycopg.connect('user=postgres password='+os.environ['POSTGRES_PASSWORD']+' host=db port=5432 dbname=postgres').execute('SELECT * FROM maze_data WHERE '+' AND '.join(where_text)).fetchall()
     if mazes:
-        with_feature_keys = []
-        for maze in mazes:
-            with_feature_keys.append(dict(zip(feature_keys, maze)))
-        return {'maze':with_feature_keys} | {'isExist': True}
+        with_feature_keys = [dict(zip(feature_keys, maze)) for maze in mazes]
+        return {'maze': with_feature_keys} | {'isExist': True}
     else:
         return {'isExist': False}
 
