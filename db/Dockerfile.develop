@@ -1,0 +1,8 @@
+# データの永続化はされない。起動のたびにcsvが読み込まれる。
+FROM postgres:16.1-bookworm
+
+COPY csv/ /csv/
+
+# dockerfile内でpsqlを使って初期設定しようとしても、まだコンテナ（postgres）が立ち上がっていないのでエラーが出る
+# だからdocker-entrypoint-initdb.dを使う
+COPY sql/ /docker-entrypoint-initdb.d

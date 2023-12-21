@@ -2,10 +2,12 @@ services:
   db:
     build:
       context: ./db
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.product
     restart: always
     env_file:
       - ./postgres.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   api:
     build:
@@ -27,3 +29,6 @@ services:
     depends_on:
       - db
       - api
+
+volumes:
+  postgres_data:

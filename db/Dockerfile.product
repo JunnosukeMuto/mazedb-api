@@ -1,0 +1,7 @@
+# データの永続化のため、コンテナの初回起動時には何もデータベースに読み込まれない。
+# そのため、docker compose execで手動でデータを読み込ませる必要がある
+FROM postgres:16.1-bookworm
+
+COPY csv/ /csv/
+
+COPY sql/ /sql/

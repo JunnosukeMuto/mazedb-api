@@ -27,7 +27,7 @@ def uniquename2features():
         return {'isExist': False}
 
 
-# {"boader_l": 12, "correct_path_len": [11, 13]}というようなJSONがPOSTされると、boader_lが12で、correct_path_lenが11以上13以下の迷路をDBから探し、存在した場合はリストにしてそれぞれの固有名と特徴量を返す
+# {"boader_l": 12, "correct_path_len": [9, 13]}というようなJSONがPOSTされると、boader_lが12で、correct_path_lenが11以上13以下の迷路をDBから探し、存在した場合はリストにしてそれぞれの固有名と特徴量を返す
 @app.route('/search/features', methods=['POST'])
 def features2uniquename():
 
